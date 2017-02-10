@@ -13,13 +13,14 @@ class StorePicker extends React.Component {
 
 	goToStore(event) {
 		event.preventDefault();
-		console.log('I changed the URL!@#$%');
 
 		// 1. Grab text from the user input from StorePicker.
 		// NOTE: In React, stay away from touching the DOM!!!; Instead use "ref".
-		console.log(this.storeInput.value);
+		const storeId = this.storeInput.value;
+		console.log(`Going to Store ID: ${storeId}`);
 
 		// 2. Transition from "/" to "/store/:storeId"
+		this.context.router.transitionTo(`/store/${storeId}`)
 	}
 
 	render() {
@@ -35,6 +36,12 @@ class StorePicker extends React.Component {
 			</form>
 			)
 	}
+}
+
+// Context - Allow (global scope) variables to be pass from top to bottom layer.
+// StorePicker component expects a "router" object; React will then make the "router" object available.
+StorePicker.contextTypes = {
+	router: React.PropTypes.object
 }
 
 export default StorePicker; // 

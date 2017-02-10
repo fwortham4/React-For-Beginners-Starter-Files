@@ -13,7 +13,7 @@ function Route() {
 		<BrowserRouter>
 			<div>
 				<Match exactly pattern="/" component={StorePicker} />
-				<Match  pattern="/store/StoreId:" component={App} />
+				<Match  pattern="/store/:storeId" component={App} />
 				<Miss component={NotFound} />
 			</div>
 		</BrowserRouter>
