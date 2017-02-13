@@ -11,6 +11,7 @@ class App extends React.Component {
 		super(); // Initializes the React component so that we can access "this".
 		this.addFish = this.addFish.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addFish method.
 		this.loadSamples = this.loadSamples.bind(this); // Weird ES6 bullsh#$%t to make "this" work for loadSamples method.
+		this.addToOrder = this.addToOrder.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addToOrder method.
 		this.state = {
 			// Creates initial state for fish and order.
 			fishes: {},
@@ -36,6 +37,16 @@ class App extends React.Component {
 		});
 	}
 
+	addToOrder(key) {
+		// 1. Take a copy of our current state.
+		const order = {...this.state.order}; // Copies original order state.
+		// 2.  Update or Add the new number of fish ordered.
+		order[key] = order[key] + 1 || 1; //Checks if fish is already being ordered and adds 1 to existing order -OR- adds 1 if new to the order.
+		// 3. Updates order state.
+		this.setState({ order }) // -OR- ({ order: order })
+
+	}
+
 	render() {
 		return ( 
 			<div className="catch-of-the-day">
@@ -45,12 +56,12 @@ class App extends React.Component {
 						{
 							Object
 								.keys(this.state.fishes) // Creates an array of fish objects.
-								.map(key => <Fish key={key} details={this.state.fishes[key]}/>) // iterates through each fish object and adds a key attribute to each.
+								.map(key => <Fish key={key} index={key} details={this.state.fishes[key]} addToOrder={this.addToOrder}/>)// iterates through each fish object and adds a key attribute to each.
 						}
 					</ul>
 				</div>
 				<Order />
-				<Inventory addFish={this.addFish} loadSamples={this.loadSamples} />
+				<Inventory addFish={this.addFish} loadSamples={this.loadSamples} addToOrder={this.addToOrder} />
 			</div>
 			)
 	}
