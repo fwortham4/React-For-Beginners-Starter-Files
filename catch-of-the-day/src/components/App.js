@@ -20,21 +20,39 @@ class App extends React.Component {
 		};
 	}
 
-	// special method made by React (see React docs)
+	// Special React Methods: (see React docs)
 	// 1.) Syncs with db (aka Firebase)
 	// 2.) Which State do you want to sync? (Ans: 'fishes')
 	componentWillMount() {
+		// runs right before the <App> is rendered.
 		this.ref = base.syncState(`${this.props.params.storeId}/fishes`
 		, {
 			context: this,
 			state: 'fishes'
 		});
+
+		// Check if there is any order in localStorage.
+		const localStorageRef = localStorage.getItem(`order-${this.props.params.storeId}`);
+		if(localStorageRef) {
+			// Update the <App> component's order state.
+			this.setState({
+				order: JSON.parse(localStorageRef) // Converts JSON string back into an object.
+			});
+		}
 	}
 
 	// If you go to a different Store 
 	// removes reference to previosuly synced store db.
 	componentWillUnmount() {
 		base.removeBinding(this.ref); 
+	}
+
+
+	componentWillUpdate(nextProps, nextState) {
+		console.log({nextProps, nextState});
+		// Passes params through props and uses JSON to convert into a string for LocalStorage in HTML5.
+		localStorage.setItem(`order-${this.props.params.storeId}`,
+			JSON.stringify(nextState.order));
 	}
 
 	// Updates Fish State: 
@@ -78,7 +96,11 @@ class App extends React.Component {
 						}
 					</ul>
 				</div>
-				<Order fishes={this.state.fishes} order={this.state.order} />
+				<Order
+				fishes={this.state.fishes}
+				order={this.state.order}
+				params={this.props.params}
+				/>
 				<Inventory addFish={this.addFish} loadSamples={this.loadSamples} addToOrder={this.addToOrder} />
 			</div>
 			)
