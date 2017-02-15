@@ -2,8 +2,9 @@ import React from 'react';
 import Header from './Header';
 import Order from './Order';
 import Inventory from './Inventory';
-import Fish from './Fish';
-import sampleFishes from '../sample-fishes';
+import Fish from './Fish'; 
+import sampleFishes from '../sample-fishes'; // Imports sample fish provided by Wes.
+import base from '../base'; // Imports our Rebase API and API keys.
 
 class App extends React.Component {
 	// Initializes State:
@@ -17,6 +18,23 @@ class App extends React.Component {
 			fishes: {},
 			order: {},
 		};
+	}
+
+	// special method made by React (see React docs)
+	// 1.) Syncs with db (aka Firebase)
+	// 2.) Which State do you want to sync? (Ans: 'fishes')
+	componentWillMount() {
+		this.ref = base.syncState(`${this.props.params.storeId}/fishes`
+		, {
+			context: this,
+			state: 'fishes'
+		});
+	}
+
+	// If you go to a different Store 
+	// removes reference to previosuly synced store db.
+	componentWillUnmount() {
+		base.removeBinding(this.ref); 
 	}
 
 	// Updates Fish State: 
