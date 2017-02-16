@@ -13,6 +13,7 @@ class App extends React.Component {
 		this.addFish = this.addFish.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addFish method.
 		this.loadSamples = this.loadSamples.bind(this); // Weird ES6 bullsh#$%t to make "this" work for loadSamples method.
 		this.addToOrder = this.addToOrder.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addToOrder method.
+		this.updateFish = this.updateFish.bind(this);
 		this.state = {
 			// Creates initial state for fish and order.
 			fishes: {},
@@ -67,6 +68,14 @@ class App extends React.Component {
 		// fishes(STATE): fishes(OBJ of old and new fish) - Telling which part of State to update.
 	}
 
+	// Updates fish data from Inventory component.
+	updateFish(key, updatedFish) {
+		const fishes = {...this.state.fishes};
+		fishes[key] = updatedFish;
+		this.setState({fishes});
+
+	}
+
 	loadSamples() {
 		this.setState({
 			fishes: sampleFishes
@@ -97,11 +106,17 @@ class App extends React.Component {
 					</ul>
 				</div>
 				<Order
-				fishes={this.state.fishes}
-				order={this.state.order}
-				params={this.props.params}
+					fishes={this.state.fishes}
+					order={this.state.order}
+					params={this.props.params}
 				/>
-				<Inventory addFish={this.addFish} loadSamples={this.loadSamples} addToOrder={this.addToOrder} />
+				<Inventory
+					addFish={this.addFish}
+					loadSamples={this.loadSamples}
+					addToOrder={this.addToOrder}
+					fishes={this.state.fishes}
+					updateFish={this.updateFish}
+				/>
 			</div>
 			)
 	}
