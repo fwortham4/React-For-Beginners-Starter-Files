@@ -14,6 +14,8 @@ class App extends React.Component {
 		this.loadSamples = this.loadSamples.bind(this); // Weird ES6 bullsh#$%t to make "this" work for loadSamples method.
 		this.addToOrder = this.addToOrder.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addToOrder method.
 		this.updateFish = this.updateFish.bind(this);
+		this.removeFish = this.removeFish.bind(this);
+		this.removeFromOrder = this.removeFromOrder.bind(this);
 		this.state = {
 			// Creates initial state for fish and order.
 			fishes: {},
@@ -73,7 +75,13 @@ class App extends React.Component {
 		const fishes = {...this.state.fishes};
 		fishes[key] = updatedFish;
 		this.setState({fishes});
+	}
 
+	// Deletes a fish from our Inventory.
+	removeFish(key, updatedFish) {
+		const fishes = {...this.state.fishes};
+		fishes[key] = null; // must set to null for Firebase (does NOT work with Firebase -> delete fishes[key])
+		this.setState({fishes});
 	}
 
 	loadSamples() {
@@ -87,6 +95,16 @@ class App extends React.Component {
 		const order = {...this.state.order}; // Copies original order state.
 		// 2.  Update or Add the new number of fish ordered.
 		order[key] = order[key] + 1 || 1; //Checks if fish is already being ordered and adds 1 to existing order -OR- adds 1 if new to the order.
+		// 3. Updates order state.
+		this.setState({ order }) // -OR- ({ order: order })
+
+	}
+
+	removeFromOrder(key) {
+		// 1. Take a copy of our current state.
+		const order = {...this.state.order}; // Copies original order state.
+		// 2.  Delete the fish from the ordered.
+		delete order[key];
 		// 3. Updates order state.
 		this.setState({ order }) // -OR- ({ order: order })
 
@@ -109,6 +127,7 @@ class App extends React.Component {
 					fishes={this.state.fishes}
 					order={this.state.order}
 					params={this.props.params}
+					removeFromOrder={this.removeFromOrder}
 				/>
 				<Inventory
 					addFish={this.addFish}
@@ -116,6 +135,7 @@ class App extends React.Component {
 					addToOrder={this.addToOrder}
 					fishes={this.state.fishes}
 					updateFish={this.updateFish}
+					removeFish={this.removeFish}
 				/>
 			</div>
 			)
