@@ -13,6 +13,9 @@ class App extends React.Component {
 		this.addFish = this.addFish.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addFish method.
 		this.loadSamples = this.loadSamples.bind(this); // Weird ES6 bullsh#$%t to make "this" work for loadSamples method.
 		this.addToOrder = this.addToOrder.bind(this); // Weird ES6 bullsh#$%t to make "this" work for addToOrder method.
+		this.updateFish = this.updateFish.bind(this);
+		this.removeFish = this.removeFish.bind(this);
+		this.removeFromOrder = this.removeFromOrder.bind(this);
 		this.state = {
 			// Creates initial state for fish and order.
 			fishes: {},
@@ -20,21 +23,39 @@ class App extends React.Component {
 		};
 	}
 
-	// special method made by React (see React docs)
+	// Special React Methods: (see React docs)
 	// 1.) Syncs with db (aka Firebase)
 	// 2.) Which State do you want to sync? (Ans: 'fishes')
 	componentWillMount() {
+		// runs right before the <App> is rendered.
 		this.ref = base.syncState(`${this.props.params.storeId}/fishes`
 		, {
 			context: this,
 			state: 'fishes'
 		});
+
+		// Check if there is any order in localStorage.
+		const localStorageRef = localStorage.getItem(`order-${this.props.params.storeId}`);
+		if(localStorageRef) {
+			// Update the <App> component's order state.
+			this.setState({
+				order: JSON.parse(localStorageRef) // Converts JSON string back into an object.
+			});
+		}
 	}
 
 	// If you go to a different Store 
 	// removes reference to previosuly synced store db.
 	componentWillUnmount() {
 		base.removeBinding(this.ref); 
+	}
+
+
+	componentWillUpdate(nextProps, nextState) {
+		console.log({nextProps, nextState});
+		// Passes params through props and uses JSON to convert into a string for LocalStorage in HTML5.
+		localStorage.setItem(`order-${this.props.params.storeId}`,
+			JSON.stringify(nextState.order));
 	}
 
 	// Updates Fish State: 
@@ -47,6 +68,20 @@ class App extends React.Component {
 		// 3. UPDATE State
 		this.setState({ fishes }) // -OR- ({ fishes: fishes })
 		// fishes(STATE): fishes(OBJ of old and new fish) - Telling which part of State to update.
+	}
+
+	// Updates fish data from Inventory component.
+	updateFish(key, updatedFish) {
+		const fishes = {...this.state.fishes};
+		fishes[key] = updatedFish;
+		this.setState({fishes});
+	}
+
+	// Deletes a fish from our Inventory.
+	removeFish(key, updatedFish) {
+		const fishes = {...this.state.fishes};
+		fishes[key] = null; // must set to null for Firebase (does NOT work with Firebase -> delete fishes[key])
+		this.setState({fishes});
 	}
 
 	loadSamples() {
@@ -65,11 +100,21 @@ class App extends React.Component {
 
 	}
 
+	removeFromOrder(key) {
+		// 1. Take a copy of our current state.
+		const order = {...this.state.order}; // Copies original order state.
+		// 2.  Delete the fish from the ordered.
+		delete order[key];
+		// 3. Updates order state.
+		this.setState({ order }) // -OR- ({ order: order })
+
+	}
+
 	render() {
 		return ( 
 			<div className="catch-of-the-day">
 				<div className="menu">
-					<Header tagline="Fresh Seafood Market"/>
+					<Header tagline="Fresh Seafood Market" />
 					<ul className="list-of-fishes">
 						{
 							Object
@@ -78,8 +123,20 @@ class App extends React.Component {
 						}
 					</ul>
 				</div>
-				<Order fishes={this.state.fishes} order={this.state.order} />
-				<Inventory addFish={this.addFish} loadSamples={this.loadSamples} addToOrder={this.addToOrder} />
+				<Order
+					fishes={this.state.fishes}
+					order={this.state.order}
+					params={this.props.params}
+					removeFromOrder={this.removeFromOrder}
+				/>
+				<Inventory
+					addFish={this.addFish}
+					loadSamples={this.loadSamples}
+					addToOrder={this.addToOrder}
+					fishes={this.state.fishes}
+					updateFish={this.updateFish}
+					removeFish={this.removeFish}
+				/>
 			</div>
 			)
 	}
