@@ -9,6 +9,7 @@ class Inventory extends React.Component {
 		this.renderInventory = this.renderInventory.bind(this);
 		this.renderLogin = this.renderLogin.bind(this);
 		this.authenticate = this.authenticate.bind(this);
+		this.logout  = this.logout .bind(this);
 		this.authHandler = this.authHandler.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.state = {
@@ -42,6 +43,11 @@ class Inventory extends React.Component {
 	authenticate(provider) {
 		console.log(`Trying to loggin with ${provider}`);
 		base.authWithOAuthPopup(provider, this.authHandler);
+	}
+
+	logout() {
+		base.unauth(); 
+		this.setState({uid: null}); // Set user id to be NULL.
 	}
 
 	authHandler(err, authData) {
@@ -104,7 +110,7 @@ class Inventory extends React.Component {
 	}
 
 	render() {
-		const logout = <button>Log Out!</button>;
+		const logout = <button onClick={this.logout}>Log Out!</button>;
 		// Authentication - checks if a user is logged-in.
 		if(!this.state.uid) {
 			return <div>{this.renderLogin()}</div>
