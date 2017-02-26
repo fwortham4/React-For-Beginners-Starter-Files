@@ -17,6 +17,17 @@ class Inventory extends React.Component {
 		}
 	}
 
+// Life Cycle Hooks:
+	componentDidMount() {
+		base.onAuth((user) => {
+			// Immediately checks if there is a user once the page loads.
+			if(user) {
+				this.authHandler(null, { user });
+			}
+		});
+	}
+
+// Custom Methods:
 	handleChange(e, key ) {
 		const fish = this.props.fishes[key];
 		// console.log(fish);
