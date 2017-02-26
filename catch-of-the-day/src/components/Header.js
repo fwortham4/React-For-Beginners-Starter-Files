@@ -12,9 +12,14 @@ function Header(props) {
 	 			</span>
 	 			Day
 	 		</h1>
-	 		<h3 className="tagline">{props.tagline}</h3>
+	 		<h3 className="tagline"><span>{props.tagline}</span></h3>
 	 	</header>
 	 )
+}
+
+// PropTypes - tells prop what type of variable to expect.
+Header.propTypes = {
+	tagline: React.PropTypes.string
 }
 
 export default Header;
