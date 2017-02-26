@@ -38,7 +38,7 @@ class StorePicker extends React.Component {
 	}
 }
 
-// Context - Allow (global scope) variables to be pass from top to bottom layer.
+// Context - Allow (global scope) variables to be passed from top to bottom layer.
 // StorePicker component expects a "router" object; React will then make the "router" object available.
 StorePicker.contextTypes = {
 	router: React.PropTypes.object
